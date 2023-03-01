@@ -1,0 +1,261 @@
+
+
+*&---------------------------------------------------------------------*
+*& Form zf_selecionar_dados
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM zf_selecionar_dados . "
+
+  IF p_mblnr IS INITIAL.
+    MESSAGE 'material obrigatorio' TYPE 'S' DISPLAY LIKE 'E'.
+    RETURN.
+  ENDIF.
+     IF p_quant is INITIAL.
+      MESSAGE 'quantidade etiqueta' type 'S' DISPLAY LIKE 'E'.
+        RETURN.
+     ENDIF.
+
+  IF p_mblnr IS NOT INITIAL AND p_vbeln IS INITIAL.
+
+*    IF p_lsmng IS INITIAL.
+*      MESSAGE 'quantidade obrigatorio' TYPE 'S' DISPLAY LIKE 'E'.
+*      RETURN.
+*    ENDIF.
+*
+*    IF p_lsmeh IS INITIAL.
+*      MESSAGE 'unidade medida' TYPE 'S' DISPLAY LIKE 'E'.
+*      RETURN.
+*    ENDIF.
+
+   IF p_quant is INITIAL.
+      MESSAGE 'quantidade etiqueta' type 'S' DISPLAY LIKE 'E'.
+        RETURN.
+     ENDIF.
+
+  ENDIF.
+
+  IF p_vbeln IS NOT INITIAL.
+    SELECT mseg~mblnr, mseg~vbeln_im, mseg~matnr, mseg~charg, mseg~lsmng, mseg~lsmeh,
+   mseg~budat_mkpf, mseg~vfdat, mseg~menge, mseg~meins, lips~umvkz, lips~VRKME
+   FROM mseg AS mseg
+      INNER JOIN lips AS lips             ON  MSEG~VBELN_IM = LIPS~VBELN
+                                         and  MSEG~VBELP_IM = LIPS~POSNR
+                                         and  MSEG~MATNR    = LIPS~MATNR
+
+
+   WHERE mblnr EQ @p_mblnr
+     AND vbeln_im = @p_vbeln
+
+
+   INTO TABLE @DATA(lt_saida).
+
+
+    LOOP AT lt_saida INTO DATA(ls_saida).
+      gs_material-matnr = ls_saida-matnr.
+      gs_material-charg = ls_saida-charg.
+      gs_material-budat = ls_saida-budat_mkpf.
+      gs_material-vfdat = ls_saida-vfdat.
+      gs_material-menge = ls_saida-menge.
+      gs_material-meins = ls_saida-meins.
+      gs_material-umvkz = ls_saida-umvkz.
+      gs_material-VRKME = ls_saida-VRKME.
+
+
+
+      APPEND gs_material TO gt_material.
+
+      CLEAR gs_material.
+
+
+    ENDLOOP.
+
+
+    elseIF p_matnr is initial AND p_charg is INITIAL.
+   SELECT mseg~mblnr, mseg~vbeln_im, mseg~matnr, mseg~charg, mseg~lsmng, mseg~lsmeh,
+   mseg~budat_mkpf, mseg~vfdat, mseg~menge, mseg~meins, lips~umvkz, lips~VRKME
+   FROM mseg AS mseg
+      INNER JOIN lips AS lips             ON  MSEG~VBELN_IM = LIPS~VBELN
+                                         and  MSEG~VBELP_IM = LIPS~POSNR
+                                         and  MSEG~MATNR    = LIPS~MATNR
+      WHERE
+      mblnr eq @p_mblnr AND
+      lsmng = @p_lsmng AND
+      lsmeh = @p_lsmeh
+
+  INTO TABLE @DATA(lt_saida2).
+
+
+    LOOP AT lt_saida2 INTO DATA(ls_saida2).
+      gs_material-matnr = ls_saida2-matnr.
+      gs_material-charg = ls_saida2-charg.
+      gs_material-budat = ls_saida2-budat_mkpf.
+      gs_material-vfdat = ls_saida2-vfdat.
+      gs_material-menge = ls_saida2-menge.
+      gs_material-meins = ls_saida2-meins.
+      gs_material-umvkz = ls_saida2-umvkz.
+      gs_material-VRKME = ls_saida2-VRKME.
+
+      APPEND gs_material TO gt_material.
+
+      CLEAR gs_material.
+
+    ENDLOOP.
+    ENDIF.
+
+    IF p_vbeln IS INITIAL AND p_matnr is NOT INITIAL and p_charg is not INITIAL.
+
+   SELECT mseg~mblnr, mseg~vbeln_im, mseg~matnr, mseg~charg, mseg~lsmng, mseg~lsmeh,
+   mseg~budat_mkpf, mseg~vfdat, mseg~menge, mseg~meins, lips~umvkz, lips~VRKME
+   FROM mseg AS mseg
+      INNER JOIN lips AS lips             ON  MSEG~VBELN_IM = LIPS~VBELN
+                                         and  MSEG~VBELP_IM = LIPS~POSNR
+                                         and  MSEG~matnr    = LIPS~MATNR
+      WHERE
+           mblnr = @p_mblnr    and
+           lsmng = @p_lsmng     AND
+           lsmeh = @p_lsmeh     AND
+           MSEG~matnr = @p_matnr AND
+           MSEG~charg = @p_charg
+
+
+
+  INTO TABLE @DATA(lt_saida3).
+
+      LOOP AT lt_saida3 INTO DATA(ls_saida3).
+      gs_material-matnr = ls_saida3-matnr.
+      gs_material-charg = ls_saida3-charg.
+      gs_material-budat = ls_saida3-budat_mkpf.
+      gs_material-vfdat = ls_saida3-vfdat.
+      gs_material-menge = ls_saida3-menge.
+      gs_material-meins = ls_saida3-meins.
+      gs_material-umvkz = ls_saida3-umvkz.
+      gs_material-VRKME = ls_saida3-VRKME.
+
+
+      APPEND gs_material TO gt_material.
+
+      CLEAR gs_material.
+
+    ENDLOOP.
+
+    ENDIF.
+
+  IF sy-subrc IS INITIAL.
+
+    PERFORM zf_impressora.
+
+  ENDIF.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form zf_impressora
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM zf_impressora .
+  DATA: output_device(4) TYPE c.
+  output_device = p_pdest.  " The device short name
+  DATA: var_matnr(100) TYPE c,
+        var_charg(100) TYPE c,
+        var_budat(100) TYPE c,
+        var_vfdat(100) TYPE c,
+        var_menge(100) TYPE c,
+        var_mengechar  TYPE string,
+        var_meins(100) TYPE c,
+        var_umvkz(100) type c,
+        var_umvkzchar type string,
+        var_meins_ type vbap-meins,
+        var_meins_char type string.
+
+  LOOP AT gt_material INTO gs_material.
+
+     DO p_quant TIMES.
+    NEW-PAGE PRINT ON
+     DESTINATION output_device
+        COPIES 1
+     LIST NAME space
+   LIST DATASET space
+    IMMEDIATELY 'X'
+        KEEP IN SPOOL 'X'
+     LINE-COUNT 60
+      LINE-SIZE 100
+         LAYOUT 'G_RAW'
+       NEW LIST IDENTIFICATION 'X'
+   SAP COVER PAGE space
+               NO DIALOG
+               NO-TITLE
+               NO-HEADING.
+
+
+    "zpl
+*WRITE: / 'CT~~CD,~CC^~CT~'.
+    WRITE: / '^XA'.
+    WRITE: / '~TA000'.
+    WRITE: / '~JSN'.
+    WRITE: / '^LT0'.
+    WRITE: / '^MNW'.
+    WRITE: / '^MTT'.
+    WRITE: / '^PON'.
+    WRITE: / '^PMN'.
+    WRITE: / '^LH0,0'.
+    WRITE: / '^JMA'.
+    WRITE: / '^PR8,8'.
+    WRITE: / '~SD15'.
+    WRITE: / '^JUS'.
+    WRITE: / '^LRN'.
+    WRITE: / '^CI27'.
+    WRITE: / '^PA0,1,1,0'.
+    WRITE: / '^XZ'.
+    WRITE: / '^XA'.
+    WRITE: / '^MMT'.
+    WRITE: / '^PW799'.
+    WRITE: / '^LL480'.
+    WRITE: / '^LS0'.
+    WRITE: / '^FT46,52^A0N,28,28^FH\^CI28^FDMaterial^FS^CI27'.
+    WRITE: / '^FT46,108^A0N,28,28^FH\^CI28^FDLote^FS^CI27'.
+    WRITE: / '^FT46,168^A0N,28,28^FH\^CI28^FDData EM^FS^CI27'.
+    WRITE: / '^FT46,227^A0N,28,28^FH\^CI28^FDData Vencimento^FS^CI27'.
+    WRITE: / '^FT46,287^A0N,28,28^FH\^CI28^FDQtd.Original^FS^CI27'.
+    WRITE:/ '^FT46,347^A0N,28,28^FH\^CI28^FDQtd.Unid.Alt.^FS^CI27'.
+
+    CONCATENATE: '^FT328,49^A0N,42,53^FH\^CI28^FD' gs_material-matnr '^FS^CI27' INTO var_matnr. "material
+    WRITE:/ var_matnr.
+
+    CONCATENATE: '^FT328,105^A0N,42,53^FH\^CI28^FD' gs_material-charg '^FS^CI27' INTO var_charg."lote
+    WRITE:/ var_charg.
+
+    CONCATENATE: '^FT328,168^A0N,42,48^FH\^CI28^FD' gs_material-budat '^FS^CI27' INTO var_budat."data EM
+    WRITE:/ var_budat.
+
+    CONCATENATE: '^FT328,226^A0N,42,48^FH\^CI28^FD' gs_material-vfdat '^FS^CI27' INTO var_vfdat. "data vencimento
+    WRITE:/ var_vfdat.
+
+    var_mengechar = gs_material-menge.
+    CONCATENATE: '^FT328,284^A0N,42,48^FH\^CI28^FD' var_mengechar '^FS^CI27' INTO var_menge."quantidade original
+    WRITE:/ var_menge.
+
+        var_umvkzchar = gs_material-umvkz.
+      CONCATENATE: '^FT328,342^A0N,42,48^FH\^CI28^FD' var_umvkzchar '^FS^CI27' into var_umvkz."qunt unid alt
+   WRITE:/ var_umvkz.
+
+      WRITE:/'^PQ1,,,Y'.
+    WRITE:/'^XZ'.
+
+
+    NEW-PAGE PRINT OFF.
+
+      ENDDO.
+  ENDLOOP.
+
+
+  MESSAGE: 'Etiqueta ESTANTE gerada com sucesso!' TYPE 'I' DISPLAY LIKE 'S'.
+
+ENDFORM.
