@@ -1,0 +1,27 @@
+REPORT ZRWM_IMP_ETQ_MAT.
+
+INCLUDE ZRWM_IMP_ETQ_MAT_TOP.
+
+INCLUDE ZRWM_IMP_ETQ_MAT_SCR.
+
+INITIALIZATION.
+
+  PERFORM zf_inicia_tela.
+
+AT SELECTION-SCREEN OUTPUT.
+
+  PERFORM zf_modifica_tela.
+
+START-OF-SELECTION.
+
+  PERFORM zf_selecionar_dados.
+
+         if sy-subrc NE 0.
+               message ' MATERIAL ou LOTE NÃO ENCONTRADO ' TYPE 'S' display like 'W'.
+       endif.
+
+
+
+END-OF-SELECTION.
+
+  INCLUDE ZRWM_IMP_ETQ_MAT_F01.
