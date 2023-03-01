@@ -1,0 +1,35 @@
+*&---------------------------------------------------------------------*
+*& Include          ZRWM_IMP_ETQ_MAT_SCR
+*&---------------------------------------------------------------------*
+
+
+SELECTION-SCREEN BEGIN OF BLOCK a1 WITH FRAME TITLE TEXT-001.
+
+  PARAMETERS:
+    p_mblnr TYPE mseg-mblnr   MODIF ID p1,
+    p_vbeln TYPE mseg-vbeln_im  MODIF ID p1.
+
+SELECTION-SCREEN END OF BLOCK a1.
+
+
+
+SELECTION-SCREEN BEGIN OF BLOCK a2 WITH FRAME TITLE TEXT-002.
+
+
+  PARAMETERS:
+*              p_mblnr_ TYPE mseg-mblnr MODIF ID  p2,
+              p_matnr  TYPE mseg-matnr MODIF ID p2,
+              p_charg  TYPE mseg-charg MODIF ID p2,
+              p_lsmng  TYPE mseg-lsmng  MODIF ID p2,
+              p_lsmeh  TYPE mseg-lsmeh  MODIF ID p2,
+              p_quant  TYPE i DEFAULT 1.
+
+
+SELECTION-SCREEN END OF BLOCK a2.
+
+SELECTION-SCREEN BEGIN OF BLOCK a3 WITH FRAME TITLE TEXT-003.
+
+  PARAMETERS: p_pdest TYPE cvchd-pdest .
+
+SELECTION-SCREEN END OF BLOCK a3.
+
