@@ -1,0 +1,24 @@
+*&---------------------------------------------------------------------*
+*& Include          ZRWM_IMP_ETQ_MAT_TOP
+*&---------------------------------------------------------------------*
+
+TYPES:
+  BEGIN OF ty_material,
+
+         matnr type mseg-matnr,
+         charg type mseg-charg,
+         budat type mseg-budat_mkpf,
+         vfdat type mseg-vfdat,
+         menge type mseg-menge,
+         umvkz type lips-umvkz,
+         meins type mseg-meins,
+         meins_ type lips-meins,
+         posnr type lips-posnr,
+         vbelp type mseg-vbelp_im,
+         vbeln type mseg-vbeln_im,
+         VRKME TYPE lips-VRKME,
+
+  END OF ty_material.
+
+  data: gt_material type TABLE of ty_material,
+        gs_material type ty_material.
